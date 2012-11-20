@@ -4,14 +4,13 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.ViewGroup;
-
 import com.quran.labs.androidquran.ui.fragment.QuranPageFragment;
 import com.quran.labs.androidquran.ui.fragment.TranslationFragment;
 
 public class QuranPageAdapter extends FragmentStatePagerAdapter {
    private static String TAG = "QuranPageAdapter";
 
-   private boolean mIsShowingTranslation = false;
+   protected boolean mIsShowingTranslation = false;
 
 	public QuranPageAdapter(FragmentManager fm){
 		super(fm);

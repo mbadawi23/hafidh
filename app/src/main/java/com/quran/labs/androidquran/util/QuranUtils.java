@@ -1,6 +1,7 @@
 package com.quran.labs.androidquran.util;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
@@ -39,5 +40,20 @@ public class QuranUtils {
          return activeNetwork.getType() == ConnectivityManager.TYPE_WIFI;
       }
       else { return false; }
+   }
+
+   public static boolean isTablet(Context context){
+      return (context.getResources().getConfiguration().screenLayout
+              & Configuration.SCREENLAYOUT_SIZE_MASK)
+              >= Configuration.SCREENLAYOUT_SIZE_LARGE;
+   }
+
+   public static boolean isLandscape(Context context){
+      return context.getResources().getConfiguration().orientation ==
+              Configuration.ORIENTATION_LANDSCAPE;
+   }
+
+   public static boolean isDualPaneMode(Context context){
+      return isTablet(context) && isLandscape(context);
    }
 }

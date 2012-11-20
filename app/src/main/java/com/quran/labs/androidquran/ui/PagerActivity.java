@@ -44,10 +44,7 @@ import com.quran.labs.androidquran.ui.fragment.AddTagDialog;
 import com.quran.labs.androidquran.ui.fragment.TagBookmarkDialog;
 import com.quran.labs.androidquran.ui.fragment.JumpFragment;
 import com.quran.labs.androidquran.ui.fragment.QuranPageFragment;
-import com.quran.labs.androidquran.ui.helpers.JBVisibilityHelper;
-import com.quran.labs.androidquran.ui.helpers.QuranDisplayHelper;
-import com.quran.labs.androidquran.ui.helpers.QuranPageAdapter;
-import com.quran.labs.androidquran.ui.helpers.QuranPageWorker;
+import com.quran.labs.androidquran.ui.helpers.*;
 import com.quran.labs.androidquran.util.*;
 import com.quran.labs.androidquran.widgets.AudioStatusBar;
 
@@ -123,6 +120,7 @@ public class PagerActivity extends SherlockFragmentActivity implements
       QuranScreenInfo.getOrMakeInstance(this);
 
       int page = -1;
+      boolean isDualPane = QuranUtils.isDualPaneMode(this);
 
       if (savedInstanceState != null){
          android.util.Log.d(TAG, "non-null saved instance state!");
@@ -171,8 +169,16 @@ public class PagerActivity extends SherlockFragmentActivity implements
 
       mWorker = new QuranPageWorker(this);
       mLastPopupTime = System.currentTimeMillis();
-      mPagerAdapter = new QuranPageAdapter(
+
+      if (isDualPane){
+         mPagerAdapter = new QuranDualPageAdapter(
+                 getSupportFragmentManager(), mShowingTranslation);
+      }
+      else {
+         mPagerAdapter = new QuranPageAdapter(
               getSupportFragmentManager(), mShowingTranslation);
+      }
+
       mViewPager = (ViewPager)findViewById(R.id.quran_pager);
       mViewPager.setAdapter(mPagerAdapter);
 
@@ -207,8 +213,20 @@ public class PagerActivity extends SherlockFragmentActivity implements
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN){
          JBVisibilityHelper.setVisibilityChangeListener(this, mViewPager);
       }
-      
-      mViewPager.setCurrentItem(page);
+
+      final int pg;
+      if (isDualPane){ pg = page / 2; }
+      else { pg = page; }
+
+      // because we may have just changed the adapter,
+      // we have to post this rather than do it right away.
+      mHandler.post(new Runnable() {
+         @Override
+         public void run() {
+            mViewPager.setCurrentItem(pg);
+         }
+      });
+
       QuranSettings.setLastPage(this, Constants.PAGES_LAST - page);
       setLoading(false);
 
@@ -437,8 +455,19 @@ public class PagerActivity extends SherlockFragmentActivity implements
          state.putSerializable(LAST_AUDIO_DL_REQUEST,
                  mLastAudioDownloadRequest);
       }
-      state.putSerializable(LAST_READ_PAGE,
-              Constants.PAGES_LAST - mViewPager.getCurrentItem());
+
+      int lastPage;
+      boolean shouldDouble = false;
+      int numPages = mPagerAdapter.getCount();
+      shouldDouble = numPages == 302;
+
+      lastPage = numPages - mViewPager.getCurrentItem();
+      if (shouldDouble){
+         lastPage *= 2;
+         if (lastPage %2 == 0){ lastPage--; }
+      }
+
+      state.putSerializable(LAST_READ_PAGE, lastPage);
       state.putBoolean(LAST_READING_MODE_IS_TRANSLATION, mShowingTranslation);
       super.onSaveInstanceState(state);
    }

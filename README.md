@@ -70,6 +70,18 @@ Open Source Projects Used
 
 Changelog
 ---------
+**version 2.2.0 (tablet branch)**
+
+this branch introduces preliminary tablet support.  the basics work (dual
+page mode in landscape, single page mode in portrait, dual translation
+mode).  there are bugs and things that aren't tested, and until now,
+there are no good tablet sized images generated yet.  this is just an
+experimental proof of concept.
+
+this branch requires the newest (currently r11) version of the v4 support
+library.  as a result, it won't (easily) build from the command line at
+this time, especially since mvn central has an older version of v4 support.
+
 **version 2.2.0 (in development)**
 
 - move to maven

@@ -14,7 +14,6 @@ import android.graphics.drawable.PaintDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.text.ClipboardManager;
 import android.util.Log;
@@ -41,6 +40,7 @@ import com.quran.labs.androidquran.ui.helpers.QuranDisplayHelper;
 import com.quran.labs.androidquran.ui.helpers.QuranPageWorker;
 import com.quran.labs.androidquran.util.QuranFileUtils;
 import com.quran.labs.androidquran.util.QuranScreenInfo;
+import com.quran.labs.androidquran.util.QuranUtils;
 import com.quran.labs.androidquran.widgets.HighlightingImageView;
 
 @SuppressWarnings("deprecation")
@@ -70,6 +70,9 @@ public class QuranPageFragment extends SherlockFragment {
               getArguments().getInt(PAGE_NUMBER_EXTRA) : -1;
       int width = getActivity().getWindowManager()
             .getDefaultDisplay().getWidth();
+      if (QuranUtils.isDualPaneMode(getActivity())){
+         width /= 2;
+      }
       mLeftGradient = QuranDisplayHelper.getPaintDrawable(width, 0);
       mRightGradient = QuranDisplayHelper.getPaintDrawable(0, width);
       setHasOptionsMenu(true);
